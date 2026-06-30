@@ -73,9 +73,9 @@ GeoDataRead <- function(data,
 
   # Rename variables to standard names used by GeoLift
   data <- data %>% dplyr::rename(
-    date = date_id,
-    Y = Y_id,
-    location = location_id
+    date = !!date_id,
+    Y = !!Y_id,
+    location = !!location_id
   )
 
   # Remove white spaces in date variable
@@ -200,21 +200,21 @@ GeoDataRead <- function(data,
   if (keep_unix_time == FALSE) {
     data <- data_raw %>%
       dplyr::group_by(location, time) %>%
-      dplyr::summarize(Y = sum(Y))
+      dplyr::summarize(Y = sum(Y), .groups = "drop")
     for (var in X) {
       data_aux <- data_raw %>%
         dplyr::group_by(location, time) %>%
-        dplyr::summarize(!!var := sum(!!sym(var)))
+        dplyr::summarize(!!var := sum(!!sym(var)), .groups = "drop")
       data <- data %>% dplyr::left_join(data_aux, by = c("location", "time"))
     }
   } else {
     data <- data_raw %>%
       dplyr::group_by(location, time, date_unix) %>%
-      dplyr::summarize(Y = sum(Y))
+      dplyr::summarize(Y = sum(Y), .groups = "drop")
     for (var in X) {
       data_aux <- data_raw %>%
         dplyr::group_by(location, time, date_unix) %>%
-        dplyr::summarize(!!var := sum(!!sym(var)))
+        dplyr::summarize(!!var := sum(!!sym(var)), .groups = "drop")
       data <- data %>% dplyr::left_join(data_aux, by = c("location", "time", "date_unix"))
     }
   }
@@ -458,7 +458,7 @@ ReplaceTreatmentSplit <- function(
     treatment_locations <- treatment_locations[treatment_locations != treatment_to_replace]
   }
 
-  geo_data <- geo_data %>% dplyr::mutate(D = NULL)
+  geo_data <- geo_data %>% dplyr::select(-D)
   data <- rbind(geo_data, data_after_treatment)
 
   if (length(problematic_treatments) != 0) {
@@ -515,9 +515,9 @@ TrimControls <- function(data,
                          test_locations = c(),
                          forced_control_locations = c()) {
   data <- data %>% dplyr::rename(
-    time = time_id,
-    Y = Y_id,
-    location = location_id
+    time = !!time_id,
+    Y = !!Y_id,
+    location = !!location_id
   )
 
   if (max_controls > length(unique(data$location))) {
@@ -528,7 +528,7 @@ TrimControls <- function(data,
   # Calculate the Average Time-Series
   avg_Y <- data %>%
     dplyr::group_by(time) %>%
-    dplyr::summarize(Y_mean = mean(Y))
+    dplyr::summarize(Y_mean = mean(Y), .groups = "drop")
 
   # Append it to the data
   data_aux <- data %>% dplyr::left_join(avg_Y, by = "time")
@@ -539,7 +539,7 @@ TrimControls <- function(data,
   # Calculate the average difference
   data_aux <- data_aux %>%
     dplyr::group_by(location) %>%
-    dplyr::summarize(mean_diff = mean(diff))
+    dplyr::summarize(mean_diff = mean(diff), .groups = "drop")
 
   # Calculate the percentiles for stratified sampling
   perc <- quantile(data_aux$mean_diff, probs = seq(0, 1, 0.2))

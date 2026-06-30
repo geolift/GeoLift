@@ -319,9 +319,9 @@ GetWeights <- function(Y_id = "Y",
                        fixed_effects = TRUE) {
   # Rename variables to standard names used by GeoLift
   data <- data %>% dplyr::rename(
-    time = time_id,
-    Y = Y_id,
-    location = location_id
+    time = !!time_id,
+    Y = !!Y_id,
+    location = !!location_id
   )
 
   data$location <- tolower(data$location)

@@ -59,9 +59,9 @@ ASCMExecution <- function(
     fixed_effects = TRUE) {
   data <- data %>%
     dplyr::rename(
-      time = time_id,
-      Y = Y_id,
-      location = location_id
+      time = !!time_id,
+      Y = !!Y_id,
+      location = !!location_id
     ) %>%
     dplyr::mutate(
       location = tolower(location)

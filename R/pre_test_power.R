@@ -681,7 +681,7 @@ GeoLiftPowerFinder <- function(data,
   # Aggregated Y Per Location
   AggYperLoc <- data %>%
     dplyr::group_by(location) %>%
-    dplyr::summarize(Total_Y = sum(Y))
+    dplyr::summarize(Total_Y = sum(Y), .groups = "drop")
 
   num_sim <- length(N) * length(treatment_periods) * length(effect_size)
   if (ProgressBar == TRUE) {
@@ -747,9 +747,9 @@ GeoLiftPowerFinder <- function(data,
   resultsM$Locs <- strsplit(stringr::str_replace_all(resultsM$location, ", ", ","), split = ",")
 
   for (row in 1:nrow(resultsM)) {
-    resultsM$ProportionTotal_Y[row] <- as.numeric(AggYperLoc %>%
+    resultsM$ProportionTotal_Y[row] <- (AggYperLoc %>%
       dplyr::filter(location %in% resultsM$Locs[[row]]) %>%
-      dplyr::summarize(total = sum(Total_Y))) /
+      dplyr::summarize(total = sum(Total_Y), .groups = "drop"))$total /
       sum(AggYperLoc$Total_Y)
   }
 
@@ -990,7 +990,7 @@ GeoLiftPower.search <- function(data,
   # Aggregated Y Per Location
   AggYperLoc <- data %>%
     dplyr::group_by(location) %>%
-    dplyr::summarize(Total_Y = sum(Y))
+    dplyr::summarize(Total_Y = sum(Y), .groups = "drop")
 
   if (ProgressBar == TRUE) {
     num_sim <- length(N) * length(treatment_periods) * nrow(BestMarkets)
@@ -1045,12 +1045,12 @@ GeoLiftPower.search <- function(data,
 
     resultsM <- results %>%
       dplyr::group_by(location) %>%
-      dplyr::summarize(mean_pow = mean(pow), mean_scaled_l2_imbalance = mean(ScaledL2Imbalance)) %>%
+      dplyr::summarize(mean_pow = mean(pow), mean_scaled_l2_imbalance = mean(ScaledL2Imbalance), .groups = "drop") %>%
       dplyr::distinct()
   } else if (type == "Imbalance") {
     resultsM <- results %>%
       dplyr::group_by(location) %>%
-      dplyr::summarize(mean_scaled_l2_imbalance = mean(ScaledL2Imbalance)) %>%
+      dplyr::summarize(mean_scaled_l2_imbalance = mean(ScaledL2Imbalance), .groups = "drop") %>%
       dplyr::distinct()
   }
 
@@ -1059,9 +1059,9 @@ GeoLiftPower.search <- function(data,
   resultsM$Locs <- strsplit(stringr::str_replace_all(resultsM$location, ", ", ","), split = ",")
 
   for (row in 1:nrow(resultsM)) {
-    resultsM$ProportionTotal_Y[row] <- as.numeric(AggYperLoc %>%
+    resultsM$ProportionTotal_Y[row] <- (AggYperLoc %>%
       dplyr::filter(location %in% resultsM$Locs[[row]]) %>%
-      dplyr::summarize(total = sum(Total_Y))) /
+      dplyr::summarize(total = sum(Total_Y), .groups = "drop"))$total /
       sum(AggYperLoc$Total_Y)
   }
 
@@ -1299,7 +1299,7 @@ NumberLocations <- function(data,
 
     resultsM <- results %>%
       dplyr::group_by(n) %>%
-      dplyr::summarize(mean_pow = mean(pow), mean_L2ScaledImbalance = mean(ScaledL2Imbalance))
+      dplyr::summarize(mean_pow = mean(pow), mean_L2ScaledImbalance = mean(ScaledL2Imbalance), .groups = "drop")
     resultsM <- dplyr::add_row(resultsM, n = 0, mean_pow = 0, mean_L2ScaledImbalance = 1, .before = 1)
 
     if (type == "pValue") {
@@ -1742,7 +1742,7 @@ GeoLiftMarketSelection <- function(data,
   # Aggregated Y Per Location
   AggYperLoc <- data %>%
     dplyr::group_by(location) %>%
-    dplyr::summarize(Total_Y = sum(Y))
+    dplyr::summarize(Total_Y = sum(Y), .groups = "drop")
 
   for (n in N) {
     BestMarkets_aux <- stochastic_market_selector(
@@ -1859,16 +1859,16 @@ GeoLiftMarketSelection <- function(data,
   # Step 5.1 - Create the overall prop
   AggYperLoc <- data %>%
     dplyr::group_by(location) %>%
-    dplyr::summarize(Total_Y = sum(Y))
+    dplyr::summarize(Total_Y = sum(Y), .groups = "drop")
 
   # Step 5.2 - Attach to Table
   resultsM$ProportionTotal_Y <- 1
   resultsM$Locs <- strsplit(stringr::str_replace_all(resultsM$location, ", ", ","), split = ",")
 
   for (row in 1:nrow(resultsM)) {
-    resultsM$ProportionTotal_Y[row] <- as.numeric(AggYperLoc %>%
+    resultsM$ProportionTotal_Y[row] <- (AggYperLoc %>%
       dplyr::filter(location %in% resultsM$Locs[[row]]) %>%
-      dplyr::summarize(total = sum(Total_Y))) /
+      dplyr::summarize(total = sum(Total_Y), .groups = "drop"))$total /
       sum(AggYperLoc$Total_Y)
   }
 

@@ -183,7 +183,7 @@ MultiCellMarketSelection <- function(data,
   # Create ranking by KPI
   rank_by_loc <- data %>%
     dplyr::group_by(location) %>%
-    dplyr::summarize(sum_y = base::sum(Y)) %>%
+    dplyr::summarize(sum_y = base::sum(Y), .groups = "drop") %>%
     dplyr::arrange(dplyr::desc(sum_y)) %>%
     dplyr::mutate(rank = dplyr::row_number())
 

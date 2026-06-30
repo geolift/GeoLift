@@ -93,7 +93,7 @@ plot.GeoLiftPower <- function(x,
 
   PowerPlot_data <- x %>%
     dplyr::group_by(EffectSize) %>%
-    dplyr::summarise(power = mean(power), investment = mean(Investment)) %>%
+    dplyr::summarise(power = mean(power), investment = mean(Investment), .groups = "drop") %>%
     dplyr::mutate(AvgCost = investment / EffectSize)
 
   PowerPlot_graph <- ggplot(PowerPlot_data, aes(x = EffectSize, y = power)) +
@@ -114,12 +114,10 @@ plot.GeoLiftPower <- function(x,
     coord_cartesian(ylim = c(0, 1))
 
   if (sum(PowerPlot_data$investment != 0)) {
-    CostPerLift <- as.numeric(
-      x %>%
+    CostPerLift <- (x %>%
         dplyr::filter(EffectSize != 0) %>%
         dplyr::mutate(AvgCost = abs(Investment / EffectSize)) %>%
-        dplyr::summarise(mean(AvgCost))
-    )
+        dplyr::summarise(avg_cost = mean(AvgCost), .groups = "drop"))$avg_cost
     PowerPlot_graph <- PowerPlot_graph +
       scale_x_continuous(
         labels = scales::percent_format(accuracy = 1),

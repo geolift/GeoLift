@@ -2,12 +2,12 @@
 % Please edit documentation in R/post_test_analysis.R, R/plots.R, R/imports.R
 \docType{package}
 \name{GeoLift}
+\alias{GeoLift-package}
 \alias{GeoLift}
 \alias{print.GeoLift}
 \alias{summary.GeoLift}
 \alias{print.summary.GeoLift}
 \alias{plot.GeoLift}
-\alias{GeoLift-package}
 \title{GeoLift inference calculation.}
 \usage{
 GeoLift(
@@ -200,6 +200,7 @@ of an ad campaign.
 
 Authors:
 \itemize{
+  \item Arturo Esquerra \email{aesquerrac@gmail.com}
   \item Nicolas Cruces \email{nicolascruces1994@gmail.com}
 }
 
